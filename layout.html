@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Layout</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.all.js"></script>
+    <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item">中禾供应链信息管理平台</li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">yoyoyosiyu@126.com</a>
+                <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                    <dd><a href="">移动模块</a></dd>
+                    <dd><a href="">后台模版</a></dd>
+                    <dd><a href="">登出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-side">
+
+    </div>
+    <div class="layui-body">
+        <div class="layui-body-header">
+            <span class="layui-nav-item layui-breadcrumb">
+                <a href="javascript:;">设置</a>
+                <a href="javascript:;">权限设置</a>
+            </span>
+        </div>
+    </div>
+</div>
+<script>
+
+    //JavaScript代码区域
+    layui.use('element', function(){
+        console.log("hell, world!");
+        var element = layui.element;
+        element.init();
+
+    });
+</script>
+
+</body>
+
+</html>

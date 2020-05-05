@@ -1,0 +1,58 @@
+:root {
+    --sidebar-width: 80px;
+    --header-height: 50px;
+    --footer-height: 0px;
+}
+
+html {
+    background-color: #f2f2f2;
+    color: #666;
+}
+
+.layui-layout-admin .layui-header {
+    margin-left: var(--sidebar-width);
+    border-bottom: none;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+    height: var(--header-height);
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+.layui-layout-admin .layui-header a, .layui-layout-admin .layui-header a:hover {
+    color: #333;
+}
+
+.layui-layout-admin .layui-side {
+    top: 0;
+    width: var(--sidebar-width);
+    z-index: 1001;
+    background-color: #20222A
+}
+
+.layui-layout-admin .layui-layout-left {
+    left: 0;
+}
+
+.layui-layout-admin .layui-nav .layui-nav-item {
+    color: #0C0C0C;
+    line-height: var(--header-height);
+}
+
+/** 导航菜单栏二级菜单右侧的三角按钮的样式 **/
+.layui-layout-admin .layui-header .layui-nav .layui-nav-more {
+    border-top-color: #666;
+}
+
+.layui-layout-admin .layui-header .layui-nav .layui-nav-mored {
+    border-color: transparent transparent #666;
+}
+
+.layui-layout-admin .layui-body {
+    top: var(--header-height);
+    left: var(--sidebar-width);
+    bottom: var(--footer-height)
+}
+
+.layui-layout-admin .layui-body .layui-body-header {
+    margin: 15px;
+}

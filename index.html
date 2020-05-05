@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hello, world</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.all.js"></script>
+</head>
+<body>
+    <p>Hello, World</p>
+    <button type="button" class="layui-btn">一个标准的按钮</button>
+    <div id="demo"></div>
+</body>
+
+<script>
+
+    layui.use('table', function(){
+        var table = layui.table;
+
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            ,height: 312
+            ,url: 'http://localhost:5000/employees' //数据接口
+            ,page: {curr:2} //开启分页
+            ,limit: 20
+            ,curr: 2
+            ,cols: [[ //表头
+                {field: 'emp_no', title: 'ID', width:80, sort: true, fixed: 'left'}
+                ,{field: 'first_name', title: '姓', width:80}
+                ,{field: 'last_name', title: '名', width:80, sort: true}
+                ,{field: 'gender', title: '性别', width:80}
+                ,{field: 'hire_date', title: '任职时间', width:80}
+            ]]
+        });
+
+    });
+</script>
+</html>
