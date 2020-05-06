@@ -1,0 +1,46 @@
+.layui-layout-admin .layui-header .header-title {
+    display: inline-block;
+    line-height: 60px;
+    color: #e2e2e2;
+    margin-left: 24px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.layui-layout-admin .layui-side {
+    padding-top: 24px;
+    padding-bottom: 24px;
+}
+
+.nav-list {
+    font-size: 14px;
+    list-style: none;
+    height: 100%;
+    box-sizing: border-box;
+    border-right: #ddd 1px solid;
+}
+
+.nav-list .nav-list-item, .nav-list-group .nav-list-item {
+    padding-inline-start: 23px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+
+.nav-list .nav-list-item .icon, .nav-list-group .nav-list-item .icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-right: 16px;
+}
+
+.nav-list-group-wrapper {
+    margin-bottom: 14px;
+}
+
+.nav-list-group-wrapper .nav-list-group-title {
+    padding-inline-start: 23px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-weight: 500;
+}
