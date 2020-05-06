@@ -1,5 +1,5 @@
 :root {
-    --sidebar-width: 80px;
+    --sidebar-width: 65px;
     --header-height: 50px;
     --footer-height: 0px;
 }
@@ -55,4 +55,135 @@ html {
 
 .layui-layout-admin .layui-body .layui-body-header {
     margin: 15px;
+}
+
+
+/*布局页面的左侧导航菜单栏的样式*/
+.layui-layout-admin .layui-side {
+    overflow-x: inherit;
+}
+
+.nav-wrapper {
+    height: 100%;
+}
+
+.nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: 100%
+}
+
+.nav-list .nav-list-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    color: #ccc;
+}
+
+.nav-list .nav-list-item.active, .nav-list .nav-list-item:hover {
+    color: #fff;
+    background-color: #1E9FFF;
+}
+
+.nav-list .nav-list-item .nav-title {
+    font-size: 14px;
+    margin-top: 3px;
+    text-align: center;
+}
+
+.nav-list .nav-list-item .item-icon {
+    font-size: 26px;
+}
+
+.nav-list .nav-list-item .arrow {
+    position: absolute;
+    right: -5px;
+    color: #fff;
+    opacity: 0;
+}
+
+.nav-list .nav-list-item:hover .arrow {
+    opacity: 1;
+}
+
+.nav-list .nav-list-item .nav-list-sub-item {
+    display: none;
+    position: absolute;
+    background: #fff;
+    z-index: 999999;
+    left: var(--sidebar-width);
+    top: 0;
+    box-shadow: rgba(0, 0, 0, 0.28) 0px 2px 12px 0px;
+    padding-left: 10px;
+    width: max-content;
+    color: #000
+}
+
+.nav-list .nav-list-item:hover .nav-list-sub-item {
+    display: block;
+}
+
+.nav-list-group.horizontal {
+    display: flex;
+}
+
+.nav-list-group .nav-list-group-item {
+    min-width: 100px;
+    padding: 10px 10px 0 0;
+}
+
+.nav-list-group .nav-list-group-item:last-child {
+    padding-bottom: 10px;
+}
+
+.nav-list-group.horizontal > .nav-list-group-item {
+    padding: 10px 0px 10px 10px;
+}
+
+.nav-list-group.horizontal > .nav-list-group-item:last-child {
+    padding-right: 10px;
+}
+
+.nav-list-group .nav-list-group-item .nav-list-group-title {
+    padding: 6px 0;
+    border-bottom: #eee 1px solid;
+    font-weight: bold;
+}
+
+
+/*icon font*/
+@font-face {
+    font-family: element-icons;
+    src: url(/fonts/element-icons.woff) format("woff"),url(../fonts/element-icons.ttf ) format("truetype");
+    font-weight: 400;
+    font-display: auto;
+    font-style: normal
+}
+
+[class*=" el-icon-"],[class^=el-icon-] {
+    font-family: element-icons!important;
+    speak: none;
+    font-style: normal;
+    font-weight: 400;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    vertical-align: baseline;
+    display: inline-block;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+
+.el-icon-shopping-bag-1:before {
+    content: "\e74e";
+}
+
+.el-icon-caret-left:before {
+    content: "\e792";
 }
