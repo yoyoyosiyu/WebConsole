@@ -6,22 +6,59 @@
     <link rel="stylesheet" href="layui/css/layui.css">
     <script src="layui/layui.all.js"></script>
     <link rel="stylesheet" href="css/admin2.css">
+    <style>
+        .header-title .icon {
+            font-size: 24px;
+            color: blueviolet;
+            padding-right: 12px;
+            vertical-align: middle;
+        }
+        .header-title .title {
+            vertical-align: middle;
+        }
+    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header">
-        <div class="header-title">中禾供应链信息管理平台</div>
+        <div class="header-title">
+            <i class="icon layui-icon layui-icon-component"></i><span class="title">中禾供应链商户管理后台</span>
+        </div>
         <ul class="layui-nav layui-layout-left">
             <li class="layui-nav-item"><a><cite></cite></a></li>
         </ul>
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a href="javascript:;">yoyoyosiyu@126.com</a>
-                <dl class="layui-nav-child"> <!-- 二级菜单 -->
-                    <dd><a href="">移动模块</a></dd>
-                    <dd><a href="">后台模版</a></dd>
-                    <dd><a href="">登出</a></dd>
-                </dl>
+                <div class="account-info layui-nav-child"> <!-- 二级菜单 -->
+                    <div class="basic">
+                        <div class="avatar"><i>S</i></div>
+                        <div class="detail">
+                            <div class="company">海南一站到家科技有限公司</div>
+                            <div class="datetime">yoyoyosiyu@126.com</div>
+                        </div>
+                    </div>
+                    <ul class="action-group">
+                        <li class="action-item">
+                            <div class="action-item-wrapper">
+                                <i class="layui-icon layui-icon-password"></i>
+                                <a href="javascript:;">修改密码</a>
+                            </div>
+                        </li>
+                        <li class="action-item">
+                            <div class="action-item-wrapper">
+                                <i class="layui-icon layui-icon-set-fill"></i>
+                                <a href="javascript:;">其他设置</a>
+                            </div>
+                        </li>
+                        <li class="action-item">
+                            <div class="action-item-wrapper">
+                                <i class="layui-icon layui-icon-logout"></i>
+                                <a href="javascript:;">登出</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </li>
         </ul>
     </div>
@@ -32,8 +69,8 @@
             <li class="nav-list-group-wrapper">
                 <div class="nav-list-group-title">商品</div>
                 <ul class="nav-list-group">
-                    <li class="nav-list-item"><a href="javascript:;"><i class="icon"></i>商品管理</a></li>
-                    <li class="nav-list-item"><a href="javascript:;"><i class="icon"></i>促销管理</a></li>
+                    <li class="nav-list-item"><a href="javascript:;"><i class="icon layui-icon layui-icon-set"></i>商品管理</a></li>
+                    <li class="nav-list-item"><a href="javascript:;"><i class="icon layui-icon layui-icon-vercode"></i>促销管理</a></li>
                     <li class="nav-list-item"><a href="javascript:;"><i class="icon"></i>销售统计</a></li>
                 </ul>
             </li>
@@ -41,7 +78,16 @@
         </ul>
     </div>
     <div class="layui-body">
-
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <div class="layui-col-md8 layui-col-md-offset2">
+                    <div class="section-title">常用设置</div>
+                    <div class="layui-card">
+                        <p>Hello, world</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <script>
