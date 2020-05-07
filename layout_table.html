@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Layout</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+    <script src="layui/layui.all.js"></script>
+    <link rel="stylesheet" href="css/admin2.css">
+    <link rel="stylesheet" href="css/common.css">
+    <style>
+        .header-title .icon {
+            font-size: 24px;
+            color: blueviolet;
+            padding-right: 12px;
+            vertical-align: middle;
+        }
+        .header-title .title {
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="header-title">
+            <i class="icon layui-icon layui-icon-component"></i><span class="title">中禾供应链商户管理后台</span>
+        </div>
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a><cite></cite></a></li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">yoyoyosiyu@126.com</a>
+                <div class="account-info layui-nav-child"> <!-- 二级菜单 -->
+                    <div class="basic">
+                        <div class="avatar"><i>S</i></div>
+                        <div class="detail">
+                            <div class="company">海南一站到家科技有限公司</div>
+                            <div class="datetime">yoyoyosiyu@126.com</div>
+                        </div>
+                    </div>
+                    <ul class="action-group">
+                        <li class="action-item">
+                            <div class="action-item-wrapper">
+                                <i class="layui-icon layui-icon-password"></i>
+                                <a href="javascript:;">修改密码</a>
+                            </div>
+                        </li>
+                        <li class="action-item">
+                            <div class="action-item-wrapper">
+                                <i class="layui-icon layui-icon-set-fill"></i>
+                                <a href="javascript:;">其他设置</a>
+                            </div>
+                        </li>
+                        <li class="action-item">
+                            <div class="action-item-wrapper">
+                                <i class="layui-icon layui-icon-logout"></i>
+                                <a href="javascript:;">登出</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!--  左侧导航菜单  -->
+    <div class="layui-side">
+        <ul class="nav-list">
+            <li class="nav-list-item"><a href="javascript:;"><i class="icon"></i>授权</a></li>
+            <li class="nav-list-group-wrapper">
+                <div class="nav-list-group-title">商品</div>
+                <ul class="nav-list-group">
+                    <li class="nav-list-item"><a href="javascript:;"><i class="icon layui-icon layui-icon-set"></i>商品管理</a></li>
+                    <li class="nav-list-item"><a href="javascript:;"><i class="icon layui-icon layui-icon-vercode"></i>促销管理</a></li>
+                    <li class="nav-list-item"><a href="javascript:;"><i class="icon"></i>销售统计</a></li>
+                </ul>
+            </li>
+            <li class="nav-list-item"><a href="javascript:;"><i class="icon"></i>关于</a></li>
+        </ul>
+    </div>
+    <div class="layui-body">
+        <div class="layui-fluid">
+            <div class="layui-row">
+                <div class="layui-col-md10 layui-col-md-offset1">
+                    <div class="section-title">常用设置</div>
+                    <div class="layui-card">
+                        <table class="layui-table" lay-data="{height:'full', skin:'line', even:false, url:'/data/user.json', page:false, id:'test'}" lay-filter="test">
+                            <thead>
+                            <tr>
+                                <th lay-data="{field:'id', width:80, sort: true}">ID</th>
+                                <th lay-data="{field:'username', width:80}">用户名</th>
+                                <th lay-data="{field:'sex', width:80, sort: true}">性别</th>
+                                <th lay-data="{field:'city'}">城市</th>
+                                <th lay-data="{field:'sign'}">签名</th>
+                                <th lay-data="{field:'experience', sort: true}">积分</th>
+                                <th lay-data="{field:'score', sort: true}">评分</th>
+                                <th lay-data="{field:'classify'}">职业</th>
+                                <th lay-data="{field:'wealth', sort: true}">财富</th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    //JavaScript代码区域
+    layui.use('element', function(){
+        console.log("hell, world!");
+        var element = layui.element;
+        element.init();
+
+    });
+
+    layui.use('table', function() {
+        var table = layui.table;
+        table.init();
+    });
+</script>
+
+</body>
+
+</html>

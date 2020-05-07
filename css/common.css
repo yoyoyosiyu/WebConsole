@@ -1,0 +1,24 @@
+.layui-table thead tr {
+    background-color: #e8eaf0;
+}
+
+.layui-table th {
+    font-size: 12px;
+    font-weight: 700;
+    color: #333;
+    line-height: 50px;
+}
+
+.layui-table td {
+    font-size: 12px;
+    color: #333;
+}
+
+.layui-table-cell {
+    height: 24px;
+    line-height: 24px;
+}
+
+.layui-table[lay-even] tr:nth-child(even) {
+    background-color: #f7f8fa;
+}
