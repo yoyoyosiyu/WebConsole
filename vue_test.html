@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vue Test Page</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js></script>
+</head>
+<body>
+    <h1>Vue Test Page</h1>
+    <div id="app">
+        {{message}}
+    </div>
+
+    <div id="app1">
+        <div>
+            {{message}}
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>NAME</th>
+                    <th>PRICE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="book in books">
+                    <td>{{book.id}}</td>
+                    <td>{{book.name}}</td>
+                    <td>{{book.price}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <el-button>Hello</el-button>
+        <el-radio v-model="radio" label="1">备选项</el-radio>
+        <el-radio v-model="radio" label="2">备选项</el-radio>
+        <el-input v-model="value" placeholder="new todo" @keydown.native.enter="addTodo" ></el-input>
+        <input v-model="value" placeholder="new Todo" ref="input" >
+    </div>
+</body>
+<script>
+    let app = new Vue({
+        el: "#app",
+        data: {
+            message: "Hello, world!"
+        }
+    })
+
+    // let books = [
+    //     {id: 10, name: 'C++ primer', price: 98.00},
+    //     {id: 11, name: 'Spring boot bible', price: 120.00},
+    //     {id: 12, name: 'ElasticSearch', price: 641.00}
+    // ]
+
+    let books = [];
+
+
+
+
+    let app2 = new Vue({
+        el: "#app1",
+        data: {
+            message: "Message 2",
+            books: [],
+            radio: '1',
+            value: 'hello, world'
+        },
+       created: function() {
+            axios.get("/data/books.json").then(function(response) {
+                console.log(response)
+                //this.books = response.data;
+                this.$set('books', response.data)
+                console.log(this.books);
+            });
+        },
+        methods: {
+            addTodo: function() {
+                console.log("input field");
+                this.message = this.value;
+                console.log(this)
+                this.$refs.input.focus();
+            }
+        }
+    })
+</script>
+</html>
