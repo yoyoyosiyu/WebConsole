@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src=https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js></script>
+    <script src="/components/select.js"></script>
 </head>
 <body>
     <h1>Vue Test Page</h1>
@@ -18,6 +19,9 @@
         <div>
             {{message}}
         </div>
+        <ul @keydown.prevent.down="nextItem" tabindex="0" @keydown.prevent.enter="nextInput" @keydown.prevent.up="prevItem">
+            <li v-for="(item,index) in books" :class="{active:index == currentIndex}">{{item.name}}</li>
+        </ul>
         <table>
             <thead>
                 <tr>
@@ -39,6 +43,7 @@
         <el-radio v-model="radio" label="2">备选项</el-radio>
         <el-input v-model="value" placeholder="new todo" @keydown.native.enter="addTodo" ></el-input>
         <input v-model="value" placeholder="new Todo" ref="input" >
+        <list-view :data="items" key-attribute="key" value-attribute="value" @keyenter="onkeyenter" @selectionChange="selectChange($event)"></list-view>
     </div>
 </body>
 <script>
@@ -64,16 +69,34 @@
         el: "#app1",
         data: {
             message: "Message 2",
-            books: [],
+            books: null,
             radio: '1',
-            value: 'hello, world'
+            value: 'hello, world',
+            options: [{
+                value: '选项1',
+                label: '黄金糕'
+            }, {
+                value: '选项2',
+                label: '双皮奶'
+            }, {
+                value: '选项3',
+                label: '蚵仔煎'
+            }, {
+                value: '选项4',
+                label: '龙须面'
+            }, {
+                value: '选项5',
+                label: '北京烤鸭'
+            }],
+            currentIndex: 0,
+            items: [{key:123, value: 'abcd'}, {key: 456, value: 'befffff'}]
         },
-       created: function() {
-            axios.get("/data/books.json").then(function(response) {
+        mounted: function() {
+            $this = this;
+            axios.get("/data/books.json").then((response) => {
                 console.log(response)
-                //this.books = response.data;
-                this.$set('books', response.data)
-                console.log(this.books);
+                $this.books=response.data;
+                console.log($this);
             });
         },
         methods: {
@@ -82,8 +105,37 @@
                 this.message = this.value;
                 console.log(this)
                 this.$refs.input.focus();
+            },
+            nextItem: function() {
+                //this.$refs.input.focus();
+                this.currentIndex++
+                if (this.currentIndex > this.books.length)
+                    this.currentIndex = 0;
+            },
+            nextInput: function() {
+                this.$refs.input.focus();
+            },
+            prevItem: function() {
+                this.currentIndex--
+                if (this.currentIndex < 0)
+                    this.currentIndex = this.books.length -1;
+            },
+            onkeyenter: function() {
+                this.$refs.input.focus();
+            },
+            selectChange: function(e) {
+                this.message = e.key;
             }
         }
     })
 </script>
+<style>
+    .list-view {
+        list-style: none;
+    }
+    .active {
+        color: #0C0C0C;
+        background-color: #dedede;
+    }
+</style>
 </html>
