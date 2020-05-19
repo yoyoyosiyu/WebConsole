@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>receipt order page</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js></script>
+    <script src="/components/select.js"></script>
+
+</head>
+<body>
+    <div class="body-wrapper" id="receiptoOrderPage">
+        <div class="left-wrapper">
+            <nav>
+                单据
+            </nav>
+        </div>
+        <div class="rigth-wrapper">
+            <div class="header-wrapper">
+                <header>
+                    中禾
+                </header>
+            </div>
+            <div class="page-content-wrapper">
+                    <el-breadcrumb separator="/" class="top-breadcrumb">
+                        <el-breadcrumb-item>单据</el-breadcrumb-item>
+                        <el-breadcrumb-item>签收单</el-breadcrumb-item>
+                      </el-breadcrumb>
+                <article class="bottom-content">
+                    <div class="left-base-info flex-width">
+                        <div class="sub-header">基本信息</div>
+                        <div class="add-order-wrapper">
+                            <div class="info-row">
+                                <span class="lable-info">签收单名</span>
+                                <div class="input-info">
+                                    <el-input v-model="order.name" placeholder="签收单名" size="small" 
+                                    ref="name"
+                                    @keydown.native.enter="nextFocus('date')"></el-input>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="lable-info">配送时间</span>
+                                <div class="input-info">
+                                    <el-input v-model="order.date" size="small" ref="date"
+                                    @keydown.native.enter="nextFocus('address')"></el-input>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="lable-info">配送地址</span>
+                                <div class="input-info">
+                                    <el-select v-model="order.addressid" 
+                                        ref="address"
+                                        class="width-full" 
+                                        @change="changeAddress" 
+                                        placeholder="请选择">
+                                        <el-option
+                                          v-for="item in addresslist"
+                                          :key="item.id"
+                                          :label="item.address"
+                                          :value="item.id">
+                                        </el-option>
+                                      </el-select>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="lable-info">联系人</span>
+                                <div class="input-info">
+                                    <el-input v-model="order.liankman" size="small" disabled></el-input>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="lable-info">联系电话</span>
+                                <div class="input-info">
+                                    <el-input v-model="order.phone" size="small" disabled></el-input>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="product-list-wrapper">
+                            <div class="info-row">
+                                <span class="lable-info">商品列表</span>
+                                <div class="input-info"> </div>
+                            </div>
+                            <div class="con-ul-wrapper">
+                                <ul class="ul-header share-row ">
+                                    <li class="li-item">商品名</li>
+                                    <li class="li-item">商品编码</li>
+                                    <li class="li-item">商品货号</li>
+                                    <li class="li-item">规格</li>
+                                    <li class="li-item">单位</li>
+                                    <li class="li-item">单价</li>
+                                    <li class="li-item">数量</li>
+                                    <li class="li-item">操作</li>
+                                </ul>
+                               <div class="scroll-modal">
+                                    <ul v-for="(pro, index) in productlist" class="product-row share-row ">
+                                        <li class="li-item">{{pro.name}}</li>
+                                        <li class="li-item">{{pro.basecode}}</li>
+                                        <li class="li-item">{{pro.productcode}}</li>
+                                        <li class="li-item">{{pro.rule}}</li>
+                                        <li class="li-item">{{pro.unit}}</li>
+                                        <li class="li-item">{{pro.price}}</li>
+                                        <li class="li-item">
+                                            <el-input v-model="pro.amount" class="number-input" :ref="'number-input-' + index"
+                                                @keydown.native.enter="nextFocus('number-input-' + (index+1))"
+                                                @keyup.native.up="nextFocus('number-input-' + (index-1))"
+                                                @keyup.native.down="nextFocus('number-input-' + (index+1))"
+                                            ></el-input>
+                                        </li>
+                                        <li class="li-item">
+                                            <!-- <i class="el-icon-edit icon-margin"></i> -->
+                                            <i class="el-icon-delete"></i>
+                                        </li>
+                                    </ul>
+                               </div>
+                            </div>
+                        </div>
+                       <div  class="submit-btn">
+                            <el-button type="primary" size="small">提交</el-button>
+                       </div>
+                    </div>
+                    <div class="right-add-product flex-width">
+                        <div class="sub-header">选择商品</div>
+                        <div>
+                            <div class="info-row">
+                                <span class="lable-info">商品名称</span>
+                                <div class="input-info"><el-input v-model="searchPro" size="small" 
+                                    ref="selectinput"
+                                    @input="searchProduct"
+                                    @keydown.native.enter="toStartSelect"></el-input> 
+                                    </div>
+                            </div>
+                            <div  ref="ulsearchlist" v-show="!!searchProList.length" 
+                            tabindex="0"
+                            class="select-wrapper"
+                                     @keydown.prevent.down="onkeydown" 
+                                    @keydown.prevent.enter="selectPro" 
+                                    @keydown.prevent.up="onkeyup">
+                                <ul class="ul-header share-row ">
+                                    <li class="li-item">商品名</li>
+                                    <li class="li-item">规格</li>
+                                    <li class="li-item">单位</li>
+                                    <li class="li-item">单价</li>
+                                </ul>
+                                <div>
+                                    <ul class="product-row share-row "
+                                    v-for="(pro, index) in searchProList"  
+                                    :class="[index === curIndex ? 'pro-focus' : '', index === selectIndex ? 'pro-select' : '']"
+                                    :ref="'li' + index"  >
+                                    <li class="li-item">{{pro.name}}</li>
+                                    <li class="li-item">{{pro.rule}}</li>
+                                    <li class="li-item">{{pro.unit}}</li>
+                                    <li class="li-item">{{pro.price}}</li>
+                                </ul>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="lable-info">数量</span>
+                                <div class="input-info">
+                                    <el-input v-model="number" ref="unmberinput" size="small"
+                                     @keyup.native.up="lastpro"
+                                     @keydown.native.enter="selectpro"></el-input>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                
+            </div>
+        </div>
+    </div>
+    
+</body>
+<script>
+  let app = new Vue({
+        el: "#receiptoOrderPage",
+        data: {
+            order: {
+                name: '',
+                date: '',
+                addressid: '',
+                address: '',
+                liankman: '',
+                phone: '',
+            },
+            addresslist: [
+                {
+                    id: 1,
+                    address: '海航',
+                    liankman: '王辉',
+                    phone: '1802873838',
+                },
+                {
+                    id: 2,
+                    address: '琼山监狱',
+                    liankman: '季述祥',
+                    phone: '1802873838',
+                }
+            ],
+            productlist: [
+                {
+                    id: 1,
+                    name: '黄瓜',
+                    basecode: '001100001',
+                    productcode: '001100001',
+                    rule: '箱装',
+                    unit: '箱',
+                    price: '90',
+                    amount: '2'
+                },
+                {
+                    id: 2,
+                    name: '西瓜',
+                    basecode: '001100001',
+                    productcode: '001100001',
+                    rule: '个',
+                    unit: '个',
+                    price: '30',
+                    amount: '10'
+                }
+            ],
+            searchProList: [],
+            searchPro: '',
+            curIndex: null,
+            selectIndex: null,
+            number: '',
+        },
+        mounted() {
+           
+        },
+        methods: {
+            changeAddress(addressid) {
+                const match = this.addresslist.find(item => item.id === addressid);
+                if(!!match) {
+                    this.order.address = match.address;
+                    this.order.liankman = match.liankman;
+                    this.order.phone = match.phone;
+                }
+            },
+            searchProduct(value) {
+                this.searchProList = !!value ? this.productlist : [];
+            },
+            nextFocus(name) {
+                if (this.$refs[name] instanceof Array) {
+                    !!this.$refs[name][0] ? this.$refs[name][0].focus() : '';
+                } else {
+                    !!this.$refs[name] ? this.$refs[name].focus() : '';
+                }
+                
+            },
+            toStartSelect() {
+                this.curIndex = 0;
+                this.$refs.selectinput.blur();
+               setTimeout(() => {
+                   this.$refs.ulsearchlist.focus();
+                //this.$refs.li0[0].focus();
+               })
+            },
+            selectPro() {
+                this.selectIndex = this.curIndex;
+                this.$refs.unmberinput.focus();
+            },
+            onkeydown() {
+                const nextIndex = this.curIndex + 1;
+                if (nextIndex < this.searchProList.length) {
+                    this.curIndex += 1;
+                //    this.$refs[`li${nextIndex}`][0].focus();
+                } else {
+                    this.$refs.unmberinput.focus();
+                }
+            },
+            onkeyup() {
+                const nextIndex = this.curIndex - 1;
+                if (nextIndex > -1) {
+                    this.curIndex -= 1;
+                    //this.$refs[`li${nextIndex}`][0].focus();
+                } else  {
+                    this.$refs.selectinput.focus();
+                }
+            },
+            selectpro() {
+                if (!this.number) {
+                    return;
+                }
+                const match = this.searchProList[this.curIndex];
+                match.amount = this.number;
+                this.productlist.unshift(match);
+                this.$refs.selectinput.focus();
+            },
+            lastpro() {
+                this.$refs.ulsearchlist.focus();
+                this.curIndex = this.searchProList.length - 1;
+            }
+        }
+    })
+</script>
+<style>
+.select-wrapper:focus {
+        outline: none;
+ }
+body, ul  {
+        margin: 0
+}
+.top-breadcrumb {
+    height: 32px;
+    line-height: 32px;
+    padding-left: 15px;
+}
+ .body-wrapper{
+    display: flex;
+    width: 100%;
+     height: 100vh;
+ }
+ .left-wrapper{
+    top: 0;
+    width: 70px;
+    z-index: 1001;
+    background-color: #20222A;
+    color: #fff;
+ }
+ .rigth-wrapper {
+     flex: 1;
+ }
+ .width-full {
+     width: 100%;
+ }
+ .header-wrapper {
+     width: 100%;
+     height: 50px;
+     background: #fff;
+     border-bottom: none;
+     box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+     color: #0C0C0C;
+     font-size: 16px;
+ }
+ .page-content-wrapper {
+     display: column;
+     width: 100%;
+     align-items: flex-start;
+     font-size: 14px;
+ }
+ article.bottom-content {
+     width: 100%;
+     display: flex;
+ }
+ .flex-width {
+    flex: 1;
+ }
+ .sub-header {
+    background: #f5f5f5;
+    height: 38px;
+    line-height: 38px;
+    text-align: center;
+    font-size: 15px;
+ }
+ .add-order-wrapper {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    padding-left: 15px;
+ }
+ .product-list-wrapper {
+    padding-left: 15px;
+ }
+ .scroll-modal {
+    max-height: calc(100vh - 500px);
+    overflow: scroll;
+ }
+ .info-row {
+        display: flex;
+        width: 100%;
+        align-items: center;
+        margin: 10px;
+    }
+.lable-info {
+        display: inline-block;
+        width: 100px;
+}
+.input-info {
+        width: 40%;
+        min-width: 300px;
+        text-align: left;
+        display: flex;
+        align-items: center;
+    }
+.input-width {
+        width: 200px;
+    }
+    .unit {
+        color: #000923;
+        text-align: center;
+        background-color: #eeeeee;
+        border: 1px solid #d4d8d8;
+        height: 32px;
+        line-height: 32px;
+        padding: 0 7px;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+.ul-header {
+    font-size: 14px;
+    font-weight: 500;
+    height: 42px;
+    background: #f5f7fa;
+    
+}
+.share-row {
+    list-style: none;
+    display: flex;
+    border-bottom: 1px solid #f5f5f5;
+    align-items: center;
+}
+.share-row:nth-child(even) {
+    background: #f5f7fa;
+}
+.submit-btn {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    text-align: right;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.product-row {
+    font-weight: 400;
+    font-size: 13px;
+    height: 30px;
+}
+.li-item {
+    flex: 1;
+}
+.number-input input {
+    border: none;
+    border-bottom: 1px solid rgba(51, 51, 51, 0.5);
+    height: 28px;
+    line-height: 28px;
+    width: 70%;
+    border-radius: 0;
+}
+.pro-focus {
+    border: 1px solid blue;
+}
+.pro-select {
+    background: #ecf5ff;
+}
+.icon-margin {
+    margin: 0 10px;
+}
+</style>
+</html>
