@@ -14,7 +14,7 @@ if (typeof(Vue) != 'undefined') {
         },
         props: ['data', 'keyAttribute', 'valueAttribute'],
         template: '<ul @keydown.prevent.enter="onkeyenter" @keydown.prevent.down="onkeydown" class="list-view" @keydown.prevent.up="onkeyup" tabindex="0">' +
-            '<li v-for="(item,index) in data" :class="{active: index == currentIndex}">{{item[valueAttribute]}}</li>' +
+            '<li v-for="(item,index) in data" :class="{active: index == currentIndex}" @click="onClick(index)">{{item[valueAttribute]}}</li>' +
             '</ul>',
         methods: {
             onkeyenter: function() {
@@ -33,6 +33,10 @@ if (typeof(Vue) != 'undefined') {
                 if (this.currentIndex < 0 && this.data.length > 0) {
                     this.currentIndex = this.data.length -1;
                 }
+                this.$emit('selectionchange', {key: this.data[this.currentIndex][this.keyAttribute], value: this.data[this.currentIndex][this.valueAttribute]})
+            },
+            onClick: function (e) {
+                this.currentIndex = e;
                 this.$emit('selectionchange', {key: this.data[this.currentIndex][this.keyAttribute], value: this.data[this.currentIndex][this.valueAttribute]})
             }
         }
