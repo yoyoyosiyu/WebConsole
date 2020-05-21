@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"  contect="no-cache">
     <title>receipt order page</title>
+    <link rel="stylesheet" href="/components/zh-plugins.css">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script src=https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js></script>
-    <script src="/components/select.js"></script>
-
+    <script src="/components/zh-plugins.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+    
 </head>
 <body>
     <div class="body-wrapper" id="receiptoOrderPage">
         <div class="left-wrapper">
-            <nav>
-                单据
-            </nav>
+            <zh-nav :navList="navList" ></zh-nav>
         </div>
         <div class="rigth-wrapper">
             <div class="header-wrapper">
@@ -43,8 +42,18 @@
                             <div class="info-row">
                                 <span class="lable-info">配送时间</span>
                                 <div class="input-info">
-                                    <el-input v-model="order.date" size="small" ref="date"
-                                    @keydown.native.enter="nextFocus('address')"></el-input>
+                                    <el-date-picker
+                                          class="width-full"
+                                          ref="date"
+                                          v-model="order.date"
+                                          type="datetime"
+                                          format="yyyy-MM-dd HH:mm"
+                                          placeholder="选择日期时间"
+                                          @change="setOrderDate"
+                                          @keydown.native.enter="nextFocus('address')">>
+                                        </el-date-picker>
+                                    <!-- <el-input v-model="order.date" size="small" ref="date"
+                                    @keydown.native.enter="nextFocus('address')"></el-input> -->
                                 </div>
                             </div>
                             <div class="info-row">
@@ -96,11 +105,11 @@
                                <div class="scroll-modal">
                                     <ul v-for="(pro, index) in productlist" class="product-row share-row ">
                                         <li class="li-item">{{pro.name}}</li>
-                                        <li class="li-item">{{pro.basecode}}</li>
-                                        <li class="li-item">{{pro.productcode}}</li>
-                                        <li class="li-item">{{pro.rule}}</li>
-                                        <li class="li-item">{{pro.unit}}</li>
-                                        <li class="li-item">{{pro.price}}</li>
+                                        <li class="li-item">{{pro.basecode || '-'}}</li>
+                                        <li class="li-item">{{pro.productcode || '-'}}</li>
+                                        <li class="li-item">{{pro.rule || '-'}}</li>
+                                        <li class="li-item">{{pro.unit || '-'}}</li>
+                                        <li class="li-item">{{pro.price || '-'}}</li>
                                         <li class="li-item">
                                             <el-input v-model="pro.amount" class="number-input" :ref="'number-input-' + index"
                                                 @keydown.native.enter="nextFocus('number-input-' + (index+1))"
@@ -117,7 +126,7 @@
                             </div>
                         </div>
                        <div  class="submit-btn">
-                            <el-button type="primary" size="small">提交</el-button>
+                            <el-button type="primary" size="small" @click="toSubmit">提交</el-button>
                        </div>
                     </div>
                     <div class="right-add-product flex-width">
@@ -138,6 +147,7 @@
                                     @keydown.prevent.enter="selectPro" 
                                     @keydown.prevent.up="onkeyup">
                                 <ul class="ul-header share-row ">
+                                    <li class="icon-item"></li>
                                     <li class="li-item">商品名</li>
                                     <li class="li-item">规格</li>
                                     <li class="li-item">单位</li>
@@ -147,11 +157,13 @@
                                     <ul class="product-row share-row "
                                     v-for="(pro, index) in searchProList"  
                                     :class="[index === curIndex ? 'pro-focus' : '', index === selectIndex ? 'pro-select' : '']"
-                                    :ref="'li' + index"  >
+                                    :ref="'li' + index"  
+                                    @click="manualSelect(pro, index)">
+                                    <li class="icon-item"><i class="el-icon-success icon-color" v-show="selectIndex === index"></i></li>
                                     <li class="li-item">{{pro.name}}</li>
-                                    <li class="li-item">{{pro.rule}}</li>
-                                    <li class="li-item">{{pro.unit}}</li>
-                                    <li class="li-item">{{pro.price}}</li>
+                                    <li class="li-item">{{pro.rule || '-'}}</li>
+                                    <li class="li-item">{{pro.unit || '-'}}</li>
+                                    <li class="li-item">{{pro.price || '-'}}</li>
                                 </ul>
                                 </div>
                             </div>
@@ -178,12 +190,13 @@
         data: {
             order: {
                 name: '',
-                date: '',
+                date: new Date(2020, 10, 10, 10, 10),
                 addressid: '',
                 address: '',
                 liankman: '',
                 phone: '',
             },
+            navList: [],
             addresslist: [
                 {
                     id: 1,
@@ -198,38 +211,73 @@
                     phone: '1802873838',
                 }
             ],
-            productlist: [
-                {
-                    id: 1,
-                    name: '黄瓜',
-                    basecode: '001100001',
-                    productcode: '001100001',
-                    rule: '箱装',
-                    unit: '箱',
-                    price: '90',
-                    amount: '2'
-                },
-                {
-                    id: 2,
-                    name: '西瓜',
-                    basecode: '001100001',
-                    productcode: '001100001',
-                    rule: '个',
-                    unit: '个',
-                    price: '30',
-                    amount: '10'
-                }
-            ],
+            productlist: [],
+            // {
+            //         id: 1,
+            //         name: '黄瓜',
+            //         basecode: '001100001',
+            //         productcode: '001100001',
+            //         rule: '箱装',
+            //         unit: '箱',
+            //         price: '90',
+            //         amount: '2'
+            //     },
             searchProList: [],
             searchPro: '',
             curIndex: null,
             selectIndex: null,
             number: '',
         },
-        mounted() {
-           
+        created() {
+            this.setDefaultTime();
+            this.navList = [
+                {
+                    id: 1,
+                    name: '单据',
+                    icon: 'el-icon-shopping-bag-1',
+                    path: '',
+                    selected: true,
+                    child: [
+                        {
+                            id: 1,
+                            name: '单据管理',
+                            icon: '',
+                            code: '',
+                            child: [
+                                {
+                                    id: 2,
+                                    name: '签收单',
+                                    icon: '',
+                                    path: '/bill/receipt',
+                                    child:[],
+                                    selected: true,
+                                },
+                                {
+                                    id: 3,
+                                    name: '对账单',
+                                    icon: '',
+                                    path: '/bill/reconcilization',
+                                    child:[],
+                                    selected: false,
+                                },
+                            ]},
+                    ],
+                }
+            ];
         },
         methods: {
+            setDefaultTime() {
+                const date = new Date();
+                const day = date.getDate();
+                date.setDate(day + 1);
+                date.setHours(7);
+                date.setMinutes(0);
+                date.setSeconds(0);
+                this.order.date = date;
+            },
+            setOrderDate(date) {
+                
+            },
             changeAddress(addressid) {
                 const match = this.addresslist.find(item => item.id === addressid);
                 if(!!match) {
@@ -239,7 +287,14 @@
                 }
             },
             searchProduct(value) {
-                this.searchProList = !!value ? this.productlist : [];
+                axios.get(`http://192.168.2.208:9000/items?keyword=${value}`).then(response => {
+                    console.log(response)
+                    if (response.status === 200) {
+                        this.searchProList = response.data ? response.data : [];
+                    } else {
+                    }
+                    
+                });
             },
             nextFocus(name) {
                 if (this.$refs[name] instanceof Array) {
@@ -260,6 +315,11 @@
             selectPro() {
                 this.selectIndex = this.curIndex;
                 this.$refs.unmberinput.focus();
+            },
+            manualSelect(product, index) {
+                this.selectIndex = index;
+                this.curIndex = index;
+                this.$refs.ulsearchlist.focus();
             },
             onkeydown() {
                 const nextIndex = this.curIndex + 1;
@@ -285,12 +345,33 @@
                 }
                 const match = this.searchProList[this.curIndex];
                 match.amount = this.number;
+                this.$refs.unmberinput.blur();
                 this.productlist.unshift(match);
                 this.$refs.selectinput.focus();
             },
             lastpro() {
                 this.$refs.ulsearchlist.focus();
                 this.curIndex = this.searchProList.length - 1;
+            },
+            toSubmit() {
+                if (!this.order.date || !this.productlist.length) {
+                    return;
+                }
+                const newdate = new Date(this.order.date).getTime();
+                const selectItems = (this.productlist || []).map(item => {
+                    return {
+                        itemId: item.id,
+                        quantity: item.amount
+
+                    }
+                })
+                const param = {
+                    tradeDate: newdate,
+                    orderLines: selectItems,
+                }
+                axios.post("http://192.168.2.208:9000/purchaseOrders", param).then(response => {
+                    console.log(response)
+                });
             }
         }
     })
@@ -300,7 +381,9 @@
         outline: none;
  }
 body, ul  {
-        margin: 0
+        margin: 0;
+        padding: 0;
+        list-style: none;
 }
 .top-breadcrumb {
     height: 32px;
@@ -313,17 +396,17 @@ body, ul  {
      height: 100vh;
  }
  .left-wrapper{
-    top: 0;
-    width: 70px;
-    z-index: 1001;
-    background-color: #20222A;
+    height: 100%;
+   width:65px;
+    min-width: 65px;
+    background: #243351;
     color: #fff;
  }
  .rigth-wrapper {
      flex: 1;
  }
  .width-full {
-     width: 100%;
+     width: 100% !important;
  }
  .header-wrapper {
      width: 100%;
@@ -346,6 +429,12 @@ body, ul  {
  }
  .flex-width {
     flex: 1;
+ }
+ .left-base-info, .right-add-product {
+    padding: 0 15px;
+ }
+ .right-add-product {
+    padding-left: 0;
  }
  .sub-header {
     background: #f5f5f5;
@@ -427,22 +516,28 @@ body, ul  {
     font-size: 13px;
     height: 30px;
 }
-.li-item {
+.share-row  .li-item {
     flex: 1;
+}
+.icon-item {
+    width: 50px;
+}
+.icon-color {
+    color: #82B1FF;
+    font-size: 18px;
 }
 .number-input input {
     border: none;
-    border-bottom: 1px solid rgba(51, 51, 51, 0.5);
+    border: 1px solid #f5f7fa;
     height: 28px;
     line-height: 28px;
     width: 70%;
-    border-radius: 0;
 }
 .pro-focus {
-    border: 1px solid blue;
+    border: 1px solid #82B1FF;
 }
 .pro-select {
-    background: #ecf5ff;
+    background: #ecf5ff !important;
 }
 .icon-margin {
     margin: 0 10px;
