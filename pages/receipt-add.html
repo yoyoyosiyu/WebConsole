@@ -17,16 +17,9 @@
             <zh-nav :navList="navList" ></zh-nav>
         </div>
         <div class="rigth-wrapper">
-            <div class="header-wrapper">
-                <header>
-                    中禾
-                </header>
-            </div>
+            <zh-header :headerinfo="headerInfo"></zh-header>
             <div class="page-content-wrapper">
-                    <el-breadcrumb separator="/" class="top-breadcrumb">
-                        <el-breadcrumb-item>单据</el-breadcrumb-item>
-                        <el-breadcrumb-item>签收单</el-breadcrumb-item>
-                      </el-breadcrumb>
+                <zh-breadscrumb :breadcrumbs="breadcrumbs" @routerchange="routerChange"></zh-breadscrumb>
                 <article class="bottom-content">
                     <div class="left-base-info flex-width">
                         <div class="sub-header">基本信息</div>
@@ -34,7 +27,7 @@
                             <div class="info-row">
                                 <span class="lable-info">签收单名</span>
                                 <div class="input-info">
-                                    <el-input v-model="order.name" placeholder="签收单名" size="small" 
+                                    <el-input v-model="orderinfo.name" placeholder="签收单名" size="small" 
                                     ref="name"
                                     @keydown.native.enter="nextFocus('date')"></el-input>
                                 </div>
@@ -45,21 +38,21 @@
                                     <el-date-picker
                                           class="width-full"
                                           ref="date"
-                                          v-model="order.date"
+                                          v-model="orderinfo.tradeDate"
                                           type="datetime"
                                           format="yyyy-MM-dd HH:mm"
                                           placeholder="选择日期时间"
                                           @change="setOrderDate"
                                           @keydown.native.enter="nextFocus('address')">>
                                         </el-date-picker>
-                                    <!-- <el-input v-model="order.date" size="small" ref="date"
+                                    <!-- <el-input v-model="order.tradeDate" size="small" ref="date"
                                     @keydown.native.enter="nextFocus('address')"></el-input> -->
                                 </div>
                             </div>
                             <div class="info-row">
                                 <span class="lable-info">配送地址</span>
                                 <div class="input-info">
-                                    <el-select v-model="order.addressid" 
+                                    <el-select v-model="orderinfo.addressid" 
                                         ref="address"
                                         class="width-full" 
                                         @change="changeAddress" 
@@ -76,13 +69,13 @@
                             <div class="info-row">
                                 <span class="lable-info">联系人</span>
                                 <div class="input-info">
-                                    <el-input v-model="order.liankman" size="small" disabled></el-input>
+                                    <el-input v-model="orderinfo.liankman" size="small" disabled></el-input>
                                 </div>
                             </div>
                             <div class="info-row">
                                 <span class="lable-info">联系电话</span>
                                 <div class="input-info">
-                                    <el-input v-model="order.phone" size="small" disabled></el-input>
+                                    <el-input v-model="orderinfo.phone" size="small" disabled></el-input>
                                 </div>
                             </div>
                         </div>
@@ -103,29 +96,32 @@
                                     <li class="li-item">操作</li>
                                 </ul>
                                <div class="scroll-modal">
-                                    <ul v-for="(pro, index) in productlist" class="product-row share-row ">
-                                        <li class="li-item">{{pro.name}}</li>
-                                        <li class="li-item">{{pro.basecode || '-'}}</li>
-                                        <li class="li-item">{{pro.productcode || '-'}}</li>
-                                        <li class="li-item">{{pro.rule || '-'}}</li>
-                                        <li class="li-item">{{pro.unit || '-'}}</li>
-                                        <li class="li-item">{{pro.price || '-'}}</li>
-                                        <li class="li-item">
-                                            <el-input v-model="pro.amount" class="number-input" :ref="'number-input-' + index"
-                                                @keydown.native.enter="nextFocus('number-input-' + (index+1))"
-                                                @keyup.native.up="nextFocus('number-input-' + (index-1))"
-                                                @keyup.native.down="nextFocus('number-input-' + (index+1))"
-                                            ></el-input>
-                                        </li>
-                                        <li class="li-item">
-                                            <!-- <i class="el-icon-edit icon-margin"></i> -->
-                                            <i class="el-icon-delete"></i>
-                                        </li>
-                                    </ul>
+                                    <div v-for="(pro, index) in orderinfo.orderLines" >
+                                        <ul v-if="!pro.isDelete" class="product-row share-row ">
+                                                <li class="li-item">{{pro.itemName}}</li>
+                                                <li class="li-item">{{pro.basecode || '-'}}</li>
+                                                <li class="li-item">{{pro.productcode || '-'}}</li>
+                                                <li class="li-item">{{pro.rule || '-'}}</li>
+                                                <li class="li-item">{{pro.unit || '-'}}</li>
+                                                <li class="li-item">{{pro.price || '-'}}</li>
+                                                <li class="li-item">
+                                                    <el-input v-model="pro.quantity" class="number-input" :ref="'number-input-' + index"
+                                                        @input="updateNmber($event, pro)"
+                                                        @keydown.native.enter="nextFocus('number-input-' + (index+1))"
+                                                        @keyup.native.up="nextFocus('number-input-' + (index-1))"
+                                                        @keyup.native.down="nextFocus('number-input-' + (index+1))"
+                                                    ></el-input>
+                                                </li>
+                                                <li class="li-item">
+                                                    <!-- <i class="el-icon-edit icon-margin"></i> -->
+                                                    <i class="el-icon-delete pointer" @click="deletePro(pro, index)"></i>
+                                                </li>
+                                        </ul>
+                                    </div>
                                </div>
                             </div>
                         </div>
-                       <div  class="submit-btn">
+                       <div  class="submit-btn" v-if="showAddBut">
                             <el-button type="primary" size="small" @click="toSubmit">提交</el-button>
                        </div>
                     </div>
@@ -136,8 +132,8 @@
                                 <span class="lable-info">商品名称</span>
                                 <div class="input-info"><el-input v-model="searchPro" size="small" 
                                     ref="selectinput"
-                                    @input="searchProduct"
-                                    @keydown.native.enter="toStartSelect"></el-input> 
+                                    @keydown.native.enter="searchProduct"
+                                    @keyup.native.down="toStartSelect"></el-input> 
                                     </div>
                             </div>
                             <div  ref="ulsearchlist" v-show="!!searchProList.length" 
@@ -148,6 +144,7 @@
                                     @keydown.prevent.up="onkeyup">
                                 <ul class="ul-header share-row ">
                                     <li class="icon-item"></li>
+                                    <li class="icon-item">序号</li>
                                     <li class="li-item">商品名</li>
                                     <li class="li-item">规格</li>
                                     <li class="li-item">单位</li>
@@ -159,8 +156,9 @@
                                     :class="[index === curIndex ? 'pro-focus' : '', index === selectIndex ? 'pro-select' : '']"
                                     :ref="'li' + index"  
                                     @click="manualSelect(pro, index)">
-                                    <li class="icon-item"><i class="el-icon-success icon-color" v-show="selectIndex === index"></i></li>
-                                    <li class="li-item">{{pro.name}}</li>
+                                    <li class="icon-item text-center"><i class="el-icon-success icon-color" v-show="selectIndex === index"></i></li>
+                                    <li class="icon-item">{{index}}</li>
+                                    <li class="li-item">{{pro.itemName}}</li>
                                     <li class="li-item">{{pro.rule || '-'}}</li>
                                     <li class="li-item">{{pro.unit || '-'}}</li>
                                     <li class="li-item">{{pro.price || '-'}}</li>
@@ -172,7 +170,7 @@
                                 <div class="input-info">
                                     <el-input v-model="number" ref="unmberinput" size="small"
                                      @keyup.native.up="lastpro"
-                                     @keydown.native.enter="selectpro"></el-input>
+                                     @keydown.native.enter="submitPro"></el-input>
                                 </div>
                             </div>
                         </div>
@@ -211,26 +209,25 @@
                     phone: '1802873838',
                 }
             ],
-            productlist: [],
-            // {
-            //         id: 1,
-            //         name: '黄瓜',
-            //         basecode: '001100001',
-            //         productcode: '001100001',
-            //         rule: '箱装',
-            //         unit: '箱',
-            //         price: '90',
-            //         amount: '2'
-            //     },
-            searchProList: [],
-            searchPro: '',
-            curIndex: null,
-            selectIndex: null,
-            number: '',
-        },
-        created() {
-            this.setDefaultTime();
-            this.navList = [
+            headerInfo: {
+                title: '中禾',
+                name: '13845524@163.com'
+            },
+            breadcrumbs: [
+                {
+                name: '单据',
+                path: '/pages/receipt-order.html'
+                },
+                {
+                name: '签收单列表',
+                path: '/pages/receipt-order.html'
+                },
+                {
+                name: '添加签收单',
+                path: ''
+                }
+            ],
+            navList: [
                 {
                     id: 1,
                     name: '单据',
@@ -263,7 +260,42 @@
                             ]},
                     ],
                 }
-            ];
+            ],
+            productlist: [],
+            // {
+            //         id: 1,
+            //         name: '黄瓜',
+            //         basecode: '001100001',
+            //         productcode: '001100001',
+            //         rule: '箱装',
+            //         unit: '箱',
+            //         price: '90',
+            //         quantity: '2'
+            //     },
+            searchProList: [],
+            searchPro: '',
+            curIndex: null,
+            selectIndex: null,
+            number: '',
+            orderinfo: {
+                orderId: 0,
+                tradeDate: 0,
+                orderLines: []
+            }
+        },
+        created() {
+            const param = this.matchRouterParam();
+            if(param && param.orderId) {
+                const orderId = Number(param.orderId);
+                this.fetchOrderDetail(orderId)
+            } else {
+                this.setDefaultTime();
+            }
+        },
+        computed: {
+            showAddBut() {
+                return (this.orderinfo.orderLines || []).some(item => item.isAdd);
+            }
         },
         methods: {
             setDefaultTime() {
@@ -273,48 +305,112 @@
                 date.setHours(7);
                 date.setMinutes(0);
                 date.setSeconds(0);
-                this.order.date = date;
+                this.orderinfo.tradeDate = date;
+            },
+            fetchOrderDetail(id) {
+                axios.get(`http://192.168.2.208:9000/purchaseOrders/${id}`).then(response => {
+                        console.log(response)
+                        if (response.status === 200) {
+                            this.orderinfo = response.data;
+                            this.orderinfo.tradeDate =  new Date(this.orderinfo.tradeDate);
+                        } else {
+                        }
+                        
+                    });
             },
             setOrderDate(date) {
                 
             },
+            matchRouterParam() {
+                const search = window.location.search;
+                let param = {};
+                if(!!search) {
+                    const validPart = search.split('?');
+                    const paramArr = (validPart[1] || '').split('&');
+                    (paramArr || []).map(item => {
+                        const itemSplit = (item || '').split('=');
+                        param[`${itemSplit[0]}`] = itemSplit[1];
+                    })
+                }
+                return param;
+            },
             changeAddress(addressid) {
                 const match = this.addresslist.find(item => item.id === addressid);
                 if(!!match) {
-                    this.order.address = match.address;
-                    this.order.liankman = match.liankman;
-                    this.order.phone = match.phone;
+                    this.orderinfo.address = match.address;
+                    this.orderinfo.liankman = match.liankman;
+                    this.orderinfo.phone = match.phone;
                 }
             },
-            searchProduct(value) {
-                axios.get(`http://192.168.2.208:9000/items?keyword=${value}`).then(response => {
+            searchProduct() {
+                axios.get(`http://192.168.2.208:9000/items?keyword=${this.searchPro}`).then(response => {
                     console.log(response)
                     if (response.status === 200) {
-                        this.searchProList = response.data ? response.data : [];
+                        this.searchProList = [];
+                        (response.data || []).map(item => {
+                            const matchItem = {
+                                itemName: item.name,
+                                itemId: item.id,
+                                price: item.price,
+                            };
+                            this.searchProList.push(matchItem);
+                        })
+                        setTimeout(() => {
+                            this.toStartSelect();
+                            this.bindKeyFun();
+                        })
                     } else {
                     }
                     
                 });
+                this.$refs.selectinput.focus();
+               
+            },
+            bindKeyFun() {
+                const element = this.$refs && this.$refs.ulsearchlist;
+                if (element) {
+                    this.$refs.ulsearchlist.focus();
+                    this.$refs.ulsearchlist.onkeydown = (e) => {
+                            const keyCode = e.keyCode || e.which || e.charCode ;
+                            const number = Number(e.key);
+                            if (number !== NaN && !!this.searchProList[number]) {
+                                this.curIndex = null;
+                                this.selectIndex = number;
+                                this.$refs.ulsearchlist.blur();
+                                setTimeout(() => {
+                                    this.$refs.unmberinput.focus();
+                                    this.$refs.unmberinput.select();
+                                })
+                            }
+                        }
+                }
             },
             nextFocus(name) {
                 if (this.$refs[name] instanceof Array) {
-                    !!this.$refs[name][0] ? this.$refs[name][0].focus() : '';
+                    this.$refs[name][0].focus();
+                    setTimeout(() => {
+                        this.$refs[name][0].select();
+                    })
                 } else {
-                    !!this.$refs[name] ? this.$refs[name].focus() : '';
+                    this.$refs[name].focus();
+                    setTimeout(() => {
+                        this.$refs[name].select();
+                    })
                 }
                 
             },
             toStartSelect() {
                 this.curIndex = 0;
+                this.selectIndex = 0;
                 this.$refs.selectinput.blur();
-               setTimeout(() => {
-                   this.$refs.ulsearchlist.focus();
-                //this.$refs.li0[0].focus();
-               })
+                this.$refs.ulsearchlist.focus();
             },
             selectPro() {
+                //this.curIndex = null;
                 this.selectIndex = this.curIndex;
+                this.curIndex = null;
                 this.$refs.unmberinput.focus();
+                this.$refs.unmberinput.select();
             },
             manualSelect(product, index) {
                 this.selectIndex = index;
@@ -325,43 +421,80 @@
                 const nextIndex = this.curIndex + 1;
                 if (nextIndex < this.searchProList.length) {
                     this.curIndex += 1;
+                    this.$refs.ulsearchlist.focus();
                 //    this.$refs[`li${nextIndex}`][0].focus();
                 } else {
+                    this.curIndex = null;
                     this.$refs.unmberinput.focus();
+                    this.$refs.unmberinput.select();
                 }
             },
             onkeyup() {
                 const nextIndex = this.curIndex - 1;
                 if (nextIndex > -1) {
                     this.curIndex -= 1;
+                    this.$refs.ulsearchlist.focus();
                     //this.$refs[`li${nextIndex}`][0].focus();
                 } else  {
+                    this.curIndex = null;
                     this.$refs.selectinput.focus();
+                    this.$refs.selectinput.select();
                 }
             },
-            selectpro() {
-                if (!this.number) {
+            submitPro() {
+                const regx = /^[0-9]*$/; 
+                if (!this.number || !regnx.test(this.number)) {
                     return;
                 }
-                const match = this.searchProList[this.curIndex];
-                match.amount = this.number;
+                const match = this.searchProList[this.selectIndex];
+                const hasItem = (this.orderinfo.orderLines || []).find(item => item.itemId== match.itemId)
+                if (!!hasItem) {
+                    return;
+                }
+                match.quantity = this.number;
+                match.isAdd = true;
+                match.isDelete = false;
                 this.$refs.unmberinput.blur();
-                this.productlist.unshift(match);
+                (this.orderinfo.orderLines || []).push(JSON.parse(JSON.stringify(match)));
                 this.$refs.selectinput.focus();
+                this.$refs.selectinput.select();
             },
             lastpro() {
                 this.$refs.ulsearchlist.focus();
                 this.curIndex = this.searchProList.length - 1;
             },
-            toSubmit() {
-                if (!this.order.date || !this.productlist.length) {
+            updateNmber($event, item) {
+                item.quantity = parseInt($event);
+                if(item.isAdd) {
                     return;
                 }
-                const newdate = new Date(this.order.date).getTime();
-                const selectItems = (this.productlist || []).map(item => {
+                const param = {
+                    orderId: this.orderinfo.orderId,
+                    orderLineId: item.itemId,
+                    quantity: item.quantity
+                }
+                this.updateOrderLineQua(param);
+            },
+            deletePro(pro, index) {
+                if (pro.isAdd) {
+                    (this.orderinfo.orderLines || []).splice(index, 1);
+                } else {
+                    const param = {
+                        orderLineId: pro.itemId,
+                        orderId: this.orderinfo.orderId
+                    }
+                    this.deleteOrderLne(param, pro, index);
+                }
+            },
+            toSubmit() {
+                if (!this.orderinfo.tradeDate || !this.orderinfo.orderLines.length) {
+                    return;
+                }
+                const newdate = new Date(this.orderinfo.tradeDate).getTime();
+                const selectItems = (this.orderinfo.orderLines || []).map(item => {
                     return {
-                        itemId: item.id,
-                        quantity: item.amount
+                        itemId: item.itemId,
+                        quantity: item.quantity
 
                     }
                 })
@@ -369,9 +502,41 @@
                     tradeDate: newdate,
                     orderLines: selectItems,
                 }
+                this.addOrderInfo(param);
+            },
+            addOrderInfo(param) {
                 axios.post("http://192.168.2.208:9000/purchaseOrders", param).then(response => {
-                    console.log(response)
+                    if (response.status === 200) {
+                        const id = response.data;
+                        this.fetchOrderDetail(id);
+                    }
                 });
+            },
+            updateOrderLineQua(param) {
+                const lineParam = {
+                    orderId: param.orderId,
+                    orderLineId: param.orderLineId,
+                    quantity: Number(param.quantity)
+                }
+                const url = `/purchaseOrders/${param.orderId}/lines/${param.orderLineId}`;
+                axios.put("http://192.168.2.208:9000" + url, lineParam).then(response => {
+                    if (response.status === 200) {
+                        const id = response.data;
+                    }
+                });
+            },
+            deleteOrderLne(param, pro, index) {
+                const url = `/purchaseOrders/${param.orderId}/lines/${param.orderLineId}`;
+                axios.delete("http://192.168.2.208:9000" + url).then(response => {
+                    if (response.status === 200) {
+                        const id = response.data;
+                        (this.orderinfo.orderLines || []).splice(index, 1);
+                    }
+                });
+            },
+            routerChange(path) {
+                const url = 'http://' + window.location.host + path.path;
+                window.open(url, '_blank');
             }
         }
     })
@@ -516,11 +681,17 @@ body, ul  {
     font-size: 13px;
     height: 30px;
 }
+.product-row:hover {
+    background: rgba(130, 177, 255, 0.5);
+}
 .share-row  .li-item {
     flex: 1;
 }
 .icon-item {
-    width: 50px;
+    width: 100px;
+}
+.text-center {
+    text-align: center;
 }
 .icon-color {
     color: #82B1FF;
@@ -541,6 +712,9 @@ body, ul  {
 }
 .icon-margin {
     margin: 0 10px;
+}
+.pointer {
+    cursor: pointer;
 }
 </style>
 </html>
