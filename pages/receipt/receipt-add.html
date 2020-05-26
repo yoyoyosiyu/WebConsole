@@ -20,15 +20,16 @@
             <zh-header :headerinfo="headerInfo"></zh-header>
             <div class="page-content-wrapper">
                 <zh-breadscrumb :breadcrumbs="breadcrumbs" @routerchange="routerChange"></zh-breadscrumb>
-                <article class="bottom-content">
+                <article class="bottom-content" v-loading="loading">
                     <div class="left-base-info flex-width">
                         <div class="sub-header">基本信息</div>
                         <div class="add-order-wrapper">
+                            <zh-partheader title="基本信息"></zh-partheader>
                             <div class="info-row">
                                 <span class="lable-info">签收单名</span>
                                 <div class="input-info">
                                     <el-input v-model="orderinfo.name" placeholder="签收单名" size="small" 
-                                    ref="name"
+                                    ref="name" disabled
                                     @keydown.native.enter="nextFocus('date')"></el-input>
                                 </div>
                             </div>
@@ -56,7 +57,7 @@
                                         ref="address"
                                         class="width-full" 
                                         @change="changeAddress" 
-                                        placeholder="请选择">
+                                        placeholder="请选择" disabled>
                                         <el-option
                                           v-for="item in addresslist"
                                           :key="item.id"
@@ -78,12 +79,22 @@
                                     <el-input v-model="orderinfo.phone" size="small" disabled></el-input>
                                 </div>
                             </div>
+                            <zh-partheader title="垫付信息"></zh-partheader>
+                            <div class="info-row">
+                                <span class="lable-info">垫付状态</span>
+                                <div class="input-info">
+                                    <el-input v-model="orderinfo.prePayStatus" size="small" disabled></el-input>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <span class="lable-info">垫付金额</span>
+                                <div class="input-info">
+                                    <el-input v-model="orderinfo.prePay" size="small" disabled></el-input>
+                                </div>
+                            </div>
                         </div>
                         <div class="product-list-wrapper">
-                            <div class="info-row">
-                                <span class="lable-info">商品列表</span>
-                                <div class="input-info"> </div>
-                            </div>
+                            <zh-partheader title="商品列表"></zh-partheader>
                             <div class="con-ul-wrapper">
                                 <ul class="ul-header share-row ">
                                     <li class="li-item">商品名</li>
@@ -106,8 +117,8 @@
                                                 <li class="li-item">{{pro.price || '-'}}</li>
                                                 <li class="li-item">
                                                     <el-input v-model="pro.quantity" class="number-input" :ref="'number-input-' + index"
-                                                        @input="updateNmber($event, pro)"
-                                                        @keydown.native.enter="nextFocus('number-input-' + (index+1))"
+                                                        @blur="updateNmber(pro)"
+                                                        @keydown.native.enter="updateNmber(pro)"
                                                         @keyup.native.up="nextFocus('number-input-' + (index-1))"
                                                         @keyup.native.down="nextFocus('number-input-' + (index+1))"
                                                     ></el-input>
@@ -176,7 +187,7 @@
                         </div>
                     </div>
                 </article>
-                
+                <zh-message v-if="showMessage" :showMessage="showMessage" :message="message" @close="showMessage=false"></zh-message>
             </div>
         </div>
     </div>
@@ -189,6 +200,7 @@
             order: {
                 name: '',
                 date: new Date(2020, 10, 10, 10, 10),
+                mode: 'add',
                 addressid: '',
                 address: '',
                 liankman: '',
@@ -216,17 +228,22 @@
             breadcrumbs: [
                 {
                 name: '单据',
-                path: '/pages/receipt-order.html'
+                path: '/pages/receipt/receipt-order.html'
                 },
                 {
                 name: '签收单列表',
-                path: '/pages/receipt-order.html'
+                path: '/pages/receipt/receipt-order.html'
                 },
                 {
                 name: '添加签收单',
                 path: ''
                 }
             ],
+            showMessage: false,
+            message: {
+                type: 'error',
+                message: ''
+            },
             navList: [
                 {
                     id: 1,
@@ -245,7 +262,7 @@
                                     id: 2,
                                     name: '签收单',
                                     icon: '',
-                                    path: '/bill/receipt',
+                                    path: '/pages/receipt/receipt-order.html',
                                     child:[],
                                     selected: true,
                                 },
@@ -253,7 +270,7 @@
                                     id: 3,
                                     name: '对账单',
                                     icon: '',
-                                    path: '/bill/reconcilization',
+                                    path: '/pages/account/account-order.html',
                                     child:[],
                                     selected: false,
                                 },
@@ -262,21 +279,12 @@
                 }
             ],
             productlist: [],
-            // {
-            //         id: 1,
-            //         name: '黄瓜',
-            //         basecode: '001100001',
-            //         productcode: '001100001',
-            //         rule: '箱装',
-            //         unit: '箱',
-            //         price: '90',
-            //         quantity: '2'
-            //     },
             searchProList: [],
             searchPro: '',
             curIndex: null,
             selectIndex: null,
             number: '',
+            loading: false,
             orderinfo: {
                 orderId: 0,
                 tradeDate: 0,
@@ -287,6 +295,7 @@
             const param = this.matchRouterParam();
             if(param && param.orderId) {
                 const orderId = Number(param.orderId);
+                this.orderinfo.mode = 'edit';
                 this.fetchOrderDetail(orderId)
             } else {
                 this.setDefaultTime();
@@ -308,15 +317,21 @@
                 this.orderinfo.tradeDate = date;
             },
             fetchOrderDetail(id) {
+                this.loading = true;
                 axios.get(`http://192.168.2.208:9000/purchaseOrders/${id}`).then(response => {
-                        console.log(response)
-                        if (response.status === 200) {
-                            this.orderinfo = response.data;
-                            this.orderinfo.tradeDate =  new Date(this.orderinfo.tradeDate);
-                        } else {
+                    this.loading = false;
+                    if (response.status === 200) {
+                        Object.assign(this.orderinfo, response.data);
+                        this.orderinfo.tradeDate =  new Date(this.orderinfo.tradeDate);
+                    }    
+                }, error => {
+                    this.loding = false;
+                        const res = error.response;
+                        this.message= {
+                            type: 'error',
+                            message: res.data.message
                         }
-                        
-                    });
+                })
             },
             setOrderDate(date) {
                 
@@ -359,9 +374,15 @@
                             this.toStartSelect();
                             this.bindKeyFun();
                         })
-                    } else {
                     }
-                    
+                }, error => {
+                    const res = error.response;
+                    this.message= {
+                        type: 'error',
+                        message: res.data.message
+                    }
+                    this.showMessage = true;
+
                 });
                 this.$refs.selectinput.focus();
                
@@ -443,7 +464,7 @@
             },
             submitPro() {
                 const regx = /^[0-9]*$/; 
-                if (!this.number || !regnx.test(this.number)) {
+                if (!this.number || !regx.test(this.number)) {
                     return;
                 }
                 const match = this.searchProList[this.selectIndex];
@@ -463,14 +484,14 @@
                 this.$refs.ulsearchlist.focus();
                 this.curIndex = this.searchProList.length - 1;
             },
-            updateNmber($event, item) {
-                item.quantity = parseInt($event);
-                if(item.isAdd) {
+            updateNmber(item) {
+                if(item.isAdd || !item.quantity) {
                     return;
                 }
+                item.quantity = parseInt(item.quantity);
                 const param = {
                     orderId: this.orderinfo.orderId,
-                    orderLineId: item.itemId,
+                    orderLineId: item.lineId,
                     quantity: item.quantity
                 }
                 this.updateOrderLineQua(param);
@@ -491,7 +512,8 @@
                     return;
                 }
                 const newdate = new Date(this.orderinfo.tradeDate).getTime();
-                const selectItems = (this.orderinfo.orderLines || []).map(item => {
+                const addList = (this.orderinfo.orderLines || []).filter(item => item.isAdd);
+                const selectItems = (addList || []).map(item => {
                     return {
                         itemId: item.itemId,
                         quantity: item.quantity
@@ -499,6 +521,7 @@
                     }
                 })
                 const param = {
+                    orderId: this.orderinfo.orderId,
                     tradeDate: newdate,
                     orderLines: selectItems,
                 }
@@ -509,7 +532,20 @@
                     if (response.status === 200) {
                         const id = response.data;
                         this.fetchOrderDetail(id);
+                        this.message= {
+                            type: 'success',
+                            message: '成功提交'
+                        }
+                        this.showMessage = true;
                     }
+                }, error => {
+                    const res = error.response;
+                    this.message= {
+                        type: 'error',
+                        message: res.data.message
+                    }
+                    this.showMessage = true;
+
                 });
             },
             updateOrderLineQua(param) {
@@ -518,12 +554,23 @@
                     orderLineId: param.orderLineId,
                     quantity: Number(param.quantity)
                 }
+                var s = new URLSearchParams({quantity: lineParam.quantity});
                 const url = `/purchaseOrders/${param.orderId}/lines/${param.orderLineId}`;
-                axios.put("http://192.168.2.208:9000" + url, lineParam).then(response => {
+                axios.put("http://192.168.2.208:9000" + url, s.toString(), {headers: {
+                    'Content-Type':'application/x-www-form-urlencoded'
+                }}).then(response => {
                     if (response.status === 200) {
                         const id = response.data;
                     }
-                });
+                }, error => {
+                    const res = error.response;
+                    this.message= {
+                        type: 'error',
+                        message: res.data.message
+                    }
+                    this.showMessage = true;
+
+                })
             },
             deleteOrderLne(param, pro, index) {
                 const url = `/purchaseOrders/${param.orderId}/lines/${param.orderLineId}`;
@@ -532,6 +579,14 @@
                         const id = response.data;
                         (this.orderinfo.orderLines || []).splice(index, 1);
                     }
+                }, error => {
+                    const res = error.response;
+                    this.message= {
+                        type: 'error',
+                        message: res.data.message
+                    }
+                    this.showMessage = true;
+
                 });
             },
             routerChange(path) {
@@ -616,6 +671,9 @@ body, ul  {
  }
  .product-list-wrapper {
     padding-left: 15px;
+ }
+ .con-ul-wrapper {
+     padding: 10px;
  }
  .scroll-modal {
     max-height: calc(100vh - 500px);
