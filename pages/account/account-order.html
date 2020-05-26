@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta charset="UTF-8"  contect="no-cache">
+        <meta charset="UTF-8" >
         <title>receipt order page</title>
         <link rel="stylesheet" href="/components/lib/zh-plugins.css">
         <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
@@ -12,27 +12,27 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
     </head>
     <body>
-        <div class="body-wrapper" id="receiptoListPage">
+        <div class="body-wrapper" id="receiptListPage">
             <div class="left-wrapper">
-                <zh-nav :navList="navList" @routerchange="navChange" ></zh-nav>
+                <zh-nav :navList="navList" @router-change="navChange" ></zh-nav>
             </div>
-            <div class="rigth-wrapper">
-                <zh-header :headerinfo="headerInfo"></zh-header>
-                <zh-breadscrumb :breadcrumbs="breadcrumbs" @routerchange="routerchange"></zh-breadscrumb>
+            <div class="right-wrapper">
+                <zh-header :header-info="headerInfo"></zh-header>
+                <zh-crumbs :breadcrumbs="breadcrumbs" @router-change="routerChange"></zh-crumbs>
                 <div class="search-wrapper conn-ope-row ">
                     <aside class="row-left">
-                        <div class="serach-item">
+                        <div class="search-item">
                             <label>筛选</label>
                             <el-input v-model="searchOptions.keyword" placeholder="输入签收单名称或ID" 
                                 size="small" class="search-input"></el-input>
                         </div>
-                        <div class="serach-item">
+                        <div class="search-item">
                             <label>配送点</label>
                             <el-select v-model="searchOptions.addressId" 
                                 filterable multiple clearable placeholder="配送点选择"
                                 size="small">
                                     <el-option
-                                        v-for="item in addresslist"
+                                        v-for="item in addressList"
                                         :key="item.id"
                                         :label="item.address"
                                         :value="item.id"
@@ -40,7 +40,7 @@
                                         </el-option>
                                 </el-select>
                         </div>
-                        <div class="serach-item">
+                        <div class="search-item">
                             <label>始末时间</label>
                             <el-date-picker
                                 v-model="value"
@@ -53,7 +53,7 @@
                                 unlink-panels>
                             </el-date-picker>
                         </div>
-                        <div class="serach-item">
+                        <div class="search-item">
                             <label>审核状态</label>
                             <el-select v-model="searchOptions.checkedStatus" 
                                    placeholder="审核状态"
@@ -67,7 +67,7 @@
                                         </el-option>
                                 </el-select>
                         </div>
-                        <div class="serach-item">
+                        <div class="search-item">
                             <label>垫付状态</label>
                             <el-select v-model="searchOptions.prePayStatus" 
                                    placeholder="垫付状态"
@@ -81,7 +81,7 @@
                                         </el-option>
                                 </el-select>
                         </div>
-                        <div class="serach-item">
+                        <div class="search-item">
                             <el-button type="primary" size="small" @click="toSearch">搜索</el-button>
                         </div>
                     </aside>
@@ -117,7 +117,7 @@
                             <ul v-for="(order, index) in orderList" class="product-row share-row ">
                                 <li class="li-item">{{order.orderId}}</li>
                                 <li class="li-item date-item">{{changeDate(order.tradeDate)}}</li>
-                                <li class="li-item">{{order.productcode || '-'}}</li>
+                                <li class="li-item">{{order.productCode || '-'}}</li>
                                 <li class="li-item">{{order.rule || '-'}}</li>
                                 <li class="li-item">{{order.unit || '-'}}</li>
                                 <li class="li-item">{{order.price || '-'}}</li>
@@ -154,7 +154,7 @@
     </body>
 <script>
     let app = new Vue({
-            el: "#receiptoListPage",
+            el: "#receiptListPage",
             data() {
                 return {
                     orderList: [],
@@ -172,17 +172,17 @@
                         path: ''
                         }
                     ],
-                    addresslist: [
+                    addressList: [
                         {
                             id: 1,
                             address: '海航',
-                            liankman: '王辉',
+                            linkMan: '王辉',
                             phone: '1802873838',
                         },
                         {
                             id: 2,
                             address: '琼山监狱',
-                            liankman: '季述祥',
+                            linkMan: '季述祥',
                             phone: '1802873838',
                         }
                     ],
@@ -272,12 +272,11 @@
                     console.log(url);
                     window.open(url, '_blank');
                 },
-                routerchange(nav, subNav) {
+                routerChange(nav, subNav) {
                     if (subNav.selected) {
                         return;
                     }
                     const url = 'http://' + window.location.host + subNav.path;
-                    console.log(url);
                     window.open(url, '_blank');
                 },
                 selectDate(date) {
@@ -324,7 +323,7 @@ body, ul  {
     background: #243351;
     color: #fff;
  }
- .rigth-wrapper {
+ .right-wrapper {
      flex: 1;
  }
  .con-ul-wrapper {
@@ -385,20 +384,17 @@ body, ul  {
     height: 44px;
     border-top: 1px solid rgba(216,222,231,.5);
 }
-.search-wrapper {
-   /* justify-content: flex-start;  */
-}
 .search-wrapper .row-left {
     display: flex;
     align-items: center;
 }
-.row-left .serach-item {
+.row-left .search-item {
     display: flex;
     align-items: center;
     margin-right: 20px;
     padding: 5px 0;
 }
-.serach-item label {
+.search-item label {
     white-space: nowrap;
     margin-right: 10px;
 }

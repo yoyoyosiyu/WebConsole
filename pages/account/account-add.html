@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"  contect="no-cache">
+    <meta charset="UTF-8" >
     <title>receipt order page</title>
     <link rel="stylesheet" href="/components/lib/zh-plugins.css">
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
@@ -12,37 +12,37 @@
     
 </head>
 <body>
-    <div class="body-wrapper" id="receiptoOrderPage">
+    <div class="body-wrapper" id="accountOrderPage">
         <div class="left-wrapper">
-            <zh-nav :navList="navList" @routerchange="navChange" ></zh-nav>
+            <zh-nav :navList="navList" @router-change="navChange" ></zh-nav>
         </div>
-        <div class="rigth-wrapper">
-            <zh-header :headerinfo="headerInfo"></zh-header>
+        <div class="right-wrapper">
+            <zh-header :header-info="headerInfo"></zh-header>
             <div class="page-content-wrapper">
-                <zh-breadscrumb :breadcrumbs="breadcrumbs" @routerchange="routerChange"></zh-breadscrumb>
+                <zh-crumbs :breadcrumbs="breadcrumbs" @router-change="routerChange"></zh-crumbs>
                 <article class="bottom-content">
                     <div class="left-base-info flex-width">
                         <div class="sub-header">基本信息</div>
                         <div class="add-order-wrapper">
-                            <zh-partheader title="基本信息"></zh-partheader>
+                            <zh-modal-header title="基本信息"></zh-modal-header>
                             <div class="info-row">
-                                <span class="lable-info">对账单名</span>
+                                <span class="label-info">对账单名</span>
                                 <div class="input-info">
-                                    <el-input v-model="orderinfo.name" placeholder="签收单名" size="small" 
+                                    <el-input v-model="orderInfo.name" placeholder="签收单名" size="small" 
                                     ref="name" disabled
                                     @keydown.native.enter="nextFocus('date')"></el-input>
                                 </div>
                             </div>
                             <div class="info-row">
-                                <span class="lable-info">关联签收单</span>
+                                <span class="label-info">关联签收单</span>
                                 <div class="input-info">
-                                    <el-select v-model="orderinfo.relReceiptId" 
+                                    <el-select v-model="orderInfo.relReceiptId" 
                                         ref="address"
                                         class="width-full" 
                                         @change="changeAddress" 
                                         placeholder="请选择" disabled>
                                         <el-option
-                                          v-for="item in addresslist"
+                                          v-for="item in addressList"
                                           :key="item.id"
                                           :label="item.address"
                                           :value="item.id">
@@ -51,14 +51,14 @@
                                 </div>
                             </div>
                             
-                            <zh-partheader title="关联信息"></zh-partheader>
+                            <zh-modal-header title="关联信息"></zh-modal-header>
                             <div class="info-row">
-                                <span class="lable-info">配送时间</span>
+                                <span class="label-info">配送时间</span>
                                 <div class="input-info">
                                     <el-date-picker
                                           class="width-full"
                                           ref="date"
-                                          v-model="orderinfo.tradeDate"
+                                          v-model="orderInfo.tradeDate"
                                           type="datetime"
                                           format="yyyy-MM-dd HH:mm"
                                           placeholder="选择日期时间"
@@ -70,15 +70,15 @@
                                 </div>
                             </div>
                             <div class="info-row">
-                                <span class="lable-info">配送地址</span>
+                                <span class="label-info">配送地址</span>
                                 <div class="input-info">
-                                    <el-select v-model="orderinfo.addressid" 
+                                    <el-select v-model="orderInfo.addressId" 
                                         ref="address"
                                         class="width-full" 
                                         @change="changeAddress" 
                                         placeholder="请选择" disabled>
                                         <el-option
-                                          v-for="item in addresslist"
+                                          v-for="item in addressList"
                                           :key="item.id"
                                           :label="item.address"
                                           :value="item.id">
@@ -87,32 +87,32 @@
                                 </div>
                             </div>
                             <div class="info-row">
-                                <span class="lable-info">联系人</span>
+                                <span class="label-info">联系人</span>
                                 <div class="input-info">
-                                    <el-input v-model="orderinfo.liankman" size="small" disabled></el-input>
+                                    <el-input v-model="orderInfo.linkMan" size="small" disabled></el-input>
                                 </div>
                             </div>
                             <div class="info-row">
-                                <span class="lable-info">联系电话</span>
+                                <span class="label-info">联系电话</span>
                                 <div class="input-info">
-                                    <el-input v-model="orderinfo.phone" size="small" disabled></el-input>
+                                    <el-input v-model="orderInfo.phone" size="small" disabled></el-input>
                                 </div>
                             </div>
                             <div class="info-row">
-                                <span class="lable-info">垫付状态</span>
+                                <span class="label-info">垫付状态</span>
                                 <div class="input-info">
-                                    <el-input v-model="orderinfo.prePayStatus" size="small" disabled></el-input>
+                                    <el-input v-model="orderInfo.prePayStatus" size="small" disabled></el-input>
                                 </div>
                             </div>
                             <div class="info-row">
-                                <span class="lable-info">垫付金额</span>
+                                <span class="label-info">垫付金额</span>
                                 <div class="input-info">
-                                    <el-input v-model="orderinfo.prePay" size="small" disabled></el-input>
+                                    <el-input v-model="orderInfo.prePay" size="small" disabled></el-input>
                                 </div>
                             </div>
                         </div>
                         <div class="product-list-wrapper">
-                            <zh-partheader title="商品列表"></zh-partheader>
+                            <zh-modal-header title="商品列表"></zh-modal-header>
                             <div class="con-ul-wrapper">
                                 <ul class="ul-header share-row ">
                                     <li class="li-item">商品名</li>
@@ -125,25 +125,25 @@
                                     <li class="li-item">操作</li>
                                 </ul>
                                <div class="scroll-modal">
-                                    <div v-for="(pro, index) in orderinfo.orderLines" >
+                                    <div v-for="(pro, index) in orderInfo.orderLines" >
                                         <ul v-if="!pro.isDelete" class="product-row share-row ">
                                                 <li class="li-item">{{pro.itemName}}</li>
-                                                <li class="li-item">{{pro.basecode || '-'}}</li>
-                                                <li class="li-item">{{pro.productcode || '-'}}</li>
+                                                <li class="li-item">{{pro.baseCode || '-'}}</li>
+                                                <li class="li-item">{{pro.productCode || '-'}}</li>
                                                 <li class="li-item">{{pro.rule || '-'}}</li>
                                                 <li class="li-item">{{pro.unit || '-'}}</li>
                                                 <li class="li-item">{{pro.price || '-'}}</li>
                                                 <li class="li-item">
                                                     <el-input v-model="pro.quantity" class="number-input" :ref="'number-input-' + index"
-                                                        @blur="updateNmber(pro)"
-                                                        @keydown.native.enter="updateNmber(pro)"
+                                                        @blur="updateQuantity(pro)"
+                                                        @keydown.native.enter="updateQuantity(pro)"
                                                         @keyup.native.up="nextFocus('number-input-' + (index-1))"
                                                         @keyup.native.down="nextFocus('number-input-' + (index+1))"
                                                     ></el-input>
                                                 </li>
                                                 <li class="li-item">
                                                     <!-- <i class="el-icon-edit icon-margin"></i> -->
-                                                    <i class="el-icon-delete pointer" @click="deletePro(pro, index)"></i>
+                                                    <i class="el-icon-delete pointer" @click="deleteProduct(pro, index)"></i>
                                                 </li>
                                         </ul>
                                     </div>
@@ -151,25 +151,25 @@
                             </div>
                         </div>
                        <div  class="submit-btn" v-if="showAddBut">
-                            <el-button type="primary" size="small" @click="toSubmit">提交</el-button>
+                            <el-button type="primary" size="small" @click="addOrderInfo">提交</el-button>
                        </div>
                     </div>
                     <div class="right-add-product flex-width">
                         <div class="sub-header">选择商品</div>
                         <div>
                             <div class="info-row">
-                                <span class="lable-info">商品名称</span>
+                                <span class="label-info">商品名称</span>
                                 <div class="input-info"><el-input v-model="searchPro" size="small" 
-                                    ref="selectinput"
+                                    ref="selectInput"
                                     @keydown.native.enter="searchProduct"
-                                    @keyup.native.down="toStartSelect"></el-input> 
+                                    @keyup.native.down="startSelect"></el-input> 
                                     </div>
                             </div>
-                            <div  ref="ulsearchlist" v-show="!!searchProList.length" 
+                            <div  ref="searchResultList" v-show="!!searchProList.length" 
                             tabindex="0"
                             class="select-wrapper"
                                      @keydown.prevent.down="onkeydown" 
-                                    @keydown.prevent.enter="selectPro" 
+                                    @keydown.prevent.enter="enterSelectProduct" 
                                     @keydown.prevent.up="onkeyup">
                                 <ul class="ul-header share-row ">
                                     <li class="icon-item"></li>
@@ -184,7 +184,7 @@
                                     v-for="(pro, index) in searchProList"  
                                     :class="[index === curIndex ? 'pro-focus' : '', index === selectIndex ? 'pro-select' : '']"
                                     :ref="'li' + index"  
-                                    @click="manualSelect(pro, index)">
+                                    @click="manualSelectProduct(pro, index)">
                                     <li class="icon-item text-center"><i class="el-icon-success icon-color" v-show="selectIndex === index"></i></li>
                                     <li class="icon-item">{{index}}</li>
                                     <li class="li-item">{{pro.itemName}}</li>
@@ -195,11 +195,11 @@
                                 </div>
                             </div>
                             <div class="info-row">
-                                <span class="lable-info">数量</span>
+                                <span class="label-info">数量</span>
                                 <div class="input-info">
-                                    <el-input v-model="number" ref="unmberinput" size="small"
-                                     @keyup.native.up="lastpro"
-                                     @keydown.native.enter="submitPro"></el-input>
+                                    <el-input v-model="number" ref="numberInput" size="small"
+                                     @keyup.native.up="focusLastProduct"
+                                     @keydown.native.enter="confirmSelectProduct"></el-input>
                                 </div>
                             </div>
                         </div>
@@ -213,29 +213,29 @@
 </body>
 <script>
   let app = new Vue({
-        el: "#receiptoOrderPage",
+        el: "#accountOrderPage",
         data: {
             order: {
                 name: '',
                 date: new Date(2020, 10, 10, 10, 10),
                 mode: 'add',
-                addressid: '',
+                addressId: '',
                 address: '',
-                liankman: '',
+                linkMan: '',
                 phone: '',
             },
             navList: [],
-            addresslist: [
+            addressList: [
                 {
                     id: 1,
                     address: '海航',
-                    liankman: '王辉',
+                    linkMan: '王辉',
                     phone: '1802873838',
                 },
                 {
                     id: 2,
                     address: '琼山监狱',
-                    liankman: '季述祥',
+                    linkMan: '季述祥',
                     phone: '1802873838',
                 }
             ],
@@ -296,23 +296,13 @@
                     ],
                 }
             ],
-            productlist: [],
-            // {
-            //         id: 1,
-            //         name: '黄瓜',
-            //         basecode: '001100001',
-            //         productcode: '001100001',
-            //         rule: '箱装',
-            //         unit: '箱',
-            //         price: '90',
-            //         quantity: '2'
-            //     },
+            productList: [],
             searchProList: [],
             searchPro: '',
             curIndex: null,
             selectIndex: null,
             number: '',
-            orderinfo: {
+            orderInfo: {
                 relReceiptId: '',
                 orderId: 0,
                 tradeDate: 0,
@@ -323,7 +313,7 @@
             const param = this.matchRouterParam();
             if(param && param.orderId) {
                 const orderId = Number(param.orderId);
-                this.orderinfo.mode = 'edit';
+                this.orderInfo.mode = 'edit';
                 this.fetchOrderDetail(orderId)
             } else {
                 this.setDefaultTime();
@@ -331,7 +321,7 @@
         },
         computed: {
             showAddBut() {
-                return (this.orderinfo.orderLines || []).some(item => item.isAdd);
+                return (this.orderInfo.orderLines || []).some(item => item.isAdd);
             }
         },
         methods: {
@@ -342,14 +332,14 @@
                 date.setHours(7);
                 date.setMinutes(0);
                 date.setSeconds(0);
-                this.orderinfo.tradeDate = date;
+                this.orderInfo.tradeDate = date;
             },
             fetchOrderDetail(id) {
                 axios.get(`http://192.168.2.208:9000/purchaseOrders/${id}`).then(response => {
                         console.log(response)
                         if (response.status === 200) {
-                            Object.assign(this.orderinfo, response.data);
-                            this.orderinfo.tradeDate =  new Date(this.orderinfo.tradeDate);
+                            Object.assign(this.orderInfo, response.data);
+                            this.orderInfo.tradeDate =  new Date(this.orderInfo.tradeDate);
                         } else {
                             this.showMessage = true;
                             this.message= {
@@ -376,12 +366,12 @@
                 }
                 return param;
             },
-            changeAddress(addressid) {
-                const match = this.addresslist.find(item => item.id === addressid);
+            changeAddress(addressId) {
+                const match = this.addressList.find(item => item.id === addressId);
                 if(!!match) {
-                    this.orderinfo.address = match.address;
-                    this.orderinfo.liankman = match.liankman;
-                    this.orderinfo.phone = match.phone;
+                    this.orderInfo.address = match.address;
+                    this.orderInfo.linkMan = match.linkMan;
+                    this.orderInfo.phone = match.phone;
                 }
             },
             searchProduct() {
@@ -398,7 +388,7 @@
                             this.searchProList.push(matchItem);
                         })
                         setTimeout(() => {
-                            this.toStartSelect();
+                            this.startSelect();
                             this.bindKeyFun();
                         })
                     }
@@ -411,23 +401,23 @@
                     this.showMessage = true;
 
                 });
-                this.$refs.selectinput.focus();
+                this.$refs.selectInput.focus();
                
             },
             bindKeyFun() {
-                const element = this.$refs && this.$refs.ulsearchlist;
+                const element = this.$refs && this.$refs.searchResultList;
                 if (element) {
-                    this.$refs.ulsearchlist.focus();
-                    this.$refs.ulsearchlist.onkeydown = (e) => {
+                    this.$refs.searchResultList.focus();
+                    this.$refs.searchResultList.onkeydown = (e) => {
                             const keyCode = e.keyCode || e.which || e.charCode ;
                             const number = Number(e.key);
                             if (number !== NaN && !!this.searchProList[number]) {
                                 this.curIndex = null;
                                 this.selectIndex = number;
-                                this.$refs.ulsearchlist.blur();
+                                this.$refs.searchResultList.blur();
                                 setTimeout(() => {
-                                    this.$refs.unmberinput.focus();
-                                    this.$refs.unmberinput.select();
+                                    this.$refs.numberInput.focus();
+                                    this.$refs.numberInput.select();
                                 })
                             }
                         }
@@ -447,99 +437,96 @@
                 }
                 
             },
-            toStartSelect() {
+            startSelect() {
                 this.curIndex = 0;
                 this.selectIndex = 0;
-                this.$refs.selectinput.blur();
-                this.$refs.ulsearchlist.focus();
+                this.$refs.selectInput.blur();
+                this.$refs.searchResultList.focus();
             },
-            selectPro() {
-                //this.curIndex = null;
+            enterSelectProduct() {
                 this.selectIndex = this.curIndex;
                 this.curIndex = null;
-                this.$refs.unmberinput.focus();
-                this.$refs.unmberinput.select();
+                this.$refs.numberInput.focus();
+                this.$refs.numberInput.select();
             },
-            manualSelect(product, index) {
+            manualSelectProduct(product, index) {
                 this.selectIndex = index;
                 this.curIndex = index;
-                this.$refs.ulsearchlist.focus();
+                this.$refs.searchResultList.focus();
             },
             onkeydown() {
                 const nextIndex = this.curIndex + 1;
                 if (nextIndex < this.searchProList.length) {
                     this.curIndex += 1;
-                    this.$refs.ulsearchlist.focus();
-                //    this.$refs[`li${nextIndex}`][0].focus();
+                    this.$refs.searchResultList.focus();
                 } else {
                     this.curIndex = null;
-                    this.$refs.unmberinput.focus();
-                    this.$refs.unmberinput.select();
+                    this.$refs.numberInput.focus();
+                    this.$refs.numberInput.select();
                 }
             },
             onkeyup() {
                 const nextIndex = this.curIndex - 1;
                 if (nextIndex > -1) {
                     this.curIndex -= 1;
-                    this.$refs.ulsearchlist.focus();
-                    //this.$refs[`li${nextIndex}`][0].focus();
+                    this.$refs.searchResultList.focus();
                 } else  {
                     this.curIndex = null;
-                    this.$refs.selectinput.focus();
-                    this.$refs.selectinput.select();
+                    this.$refs.selectInput.focus();
+                    this.$refs.selectInput.select();
                 }
             },
-            submitPro() {
-                const regx = /^[0-9]*$/; 
-                if (!this.number || !regx.test(this.number)) {
+            confirmSelectProduct() {
+                const regex = /^[0-9]*$/; 
+                if (!this.number || !regex.test(this.number)) {
                     return;
                 }
                 const match = this.searchProList[this.selectIndex];
-                const hasItem = (this.orderinfo.orderLines || []).find(item => item.itemId== match.itemId)
+                const hasItem = (this.orderInfo.orderLines || []).find(item => item.itemId== match.itemId)
                 if (!!hasItem) {
                     return;
                 }
                 match.quantity = this.number;
                 match.isAdd = true;
                 match.isDelete = false;
-                this.$refs.unmberinput.blur();
-                (this.orderinfo.orderLines || []).push(JSON.parse(JSON.stringify(match)));
-                this.$refs.selectinput.focus();
-                this.$refs.selectinput.select();
+                this.$refs.numberInput.blur();
+                (this.orderInfo.orderLines || []).push(JSON.parse(JSON.stringify(match)));
+                this.$refs.selectInput.focus();
+                this.$refs.selectInput.select();
             },
-            lastpro() {
-                this.$refs.ulsearchlist.focus();
+            focusLastProduct() {
+                this.$refs.searchResultList.focus();
                 this.curIndex = this.searchProList.length - 1;
             },
-            updateNmber(item) {
+            updateQuantity(item) {
                 if(item.isAdd || !item.quantity) {
                     return;
                 }
                 item.quantity = parseInt(item.quantity);
                 const param = {
-                    orderId: this.orderinfo.orderId,
+                    orderId: this.orderInfo.orderId,
                     orderLineId: item.lineId,
                     quantity: item.quantity
                 }
-                this.updateOrderLineQua(param);
+                this.submitQuantity(param);
             },
-            deletePro(pro, index) {
-                if (pro.isAdd) {
-                    (this.orderinfo.orderLines || []).splice(index, 1);
+            deleteProduct(product, index) {
+                if (product.isAdd) {
+                    (this.orderInfo.orderLines || []).splice(index, 1);
                 } else {
                     const param = {
-                        orderLineId: pro.itemId,
-                        orderId: this.orderinfo.orderId
+                        orderLineId: product.itemId,
+                        orderId: this.orderInfo.orderId
                     }
-                    this.deleteOrderLne(param, pro, index);
+                    this.submitDeleteProduct(param, product, index);
                 }
             },
-            toSubmit() {
-                if (!this.orderinfo.tradeDate || !this.orderinfo.orderLines.length) {
+            addOrderInfo() {
+                if (!this.orderInfo.tradeDate || !this.orderInfo.orderLines.length) {
                     return;
                 }
-                const newdate = new Date(this.orderinfo.tradeDate).getTime();
-                const addList = (this.orderinfo.orderLines || []).filter(item => item.isAdd);
+                const newDate = new Date(this.orderInfo.tradeDate).getTime();
+                const addList = (this.orderInfo.orderLines || []).filter(item => item.isAdd);
                 const selectItems = (addList || []).map(item => {
                     return {
                         itemId: item.itemId,
@@ -548,13 +535,13 @@
                     }
                 })
                 const param = {
-                    orderId: this.orderinfo.orderId,
-                    tradeDate: newdate,
+                    orderId: this.orderInfo.orderId,
+                    tradeDate: newDate,
                     orderLines: selectItems,
                 }
-                this.addOrderInfo(param);
+                this.submitOrderInfo(param);
             },
-            addOrderInfo(param) {
+            submitOrderInfo(param) {
                 axios.post("http://192.168.2.208:9000/purchaseOrders", param).then(response => {
                     if (response.status === 200) {
                         const id = response.data;
@@ -575,7 +562,7 @@
 
                 });
             },
-            updateOrderLineQua(param) {
+            submitQuantity(param) {
                 const lineParam = {
                     orderId: param.orderId,
                     orderLineId: param.orderLineId,
@@ -599,12 +586,12 @@
 
                 })
             },
-            deleteOrderLne(param, pro, index) {
+            submitDeleteProduct(param, pro, index) {
                 const url = `/purchaseOrders/${param.orderId}/lines/${param.orderLineId}`;
                 axios.delete("http://192.168.2.208:9000" + url).then(response => {
                     if (response.status === 200) {
                         const id = response.data;
-                        (this.orderinfo.orderLines || []).splice(index, 1);
+                        (this.orderInfo.orderLines || []).splice(index, 1);
                     }
                 }, error => {
                     const res = error.response;
@@ -656,7 +643,7 @@ body, ul  {
     background: #243351;
     color: #fff;
  }
- .rigth-wrapper {
+ .right-wrapper {
      flex: 1;
  }
  .width-full {
@@ -719,7 +706,7 @@ body, ul  {
         align-items: center;
         margin: 10px;
     }
-.lable-info {
+.label-info {
         display: inline-block;
         width: 100px;
 }
